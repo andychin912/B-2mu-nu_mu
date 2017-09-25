@@ -1,0 +1,12 @@
+#Descriptor: [B+ -> mu+ nu_mu]cc
+Decay Upsilon(4S)
+0.5 B+sig B-              VSS;
+0.5 B-sig B+              VSS;
+
+Decay B+sig
+1.0 mu+ nu_mu       PHTOS SLN;
+Enddecay
+CDecay B-sig
+
+
+End
