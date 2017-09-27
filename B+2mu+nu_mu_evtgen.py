@@ -17,11 +17,11 @@ from ROOT import Belle2
 import glob
 
 # decay file
-decfile = Belle2.FileSystem.findFile('decfiles/dec/1210110000.dec')
+decfile = Belle2.FileSystem.findFile('B+2mu+nu_mu.dec')
 
 # background (collision) files
-#bg = glob.glob('/group/belle2/users/jbennett/BG15th/phase3/set0/*.root') # if you run at KEKCC
-bg = glob.glob('./BG/*.root')
+bg = glob.glob('/group/belle2/users/jbennett/BG15th/phase3/set0/*.root') # if you run at KEKCC
+#bg = glob.glob('./BG/*.root')
 
 #: number of events to generate, can be overriden with -n
 num_events = 10000

@@ -2,9 +2,10 @@
 Decay Upsilon(4S)
 0.5 B+sig B-              VSS;
 0.5 B-sig B+              VSS;
+Enddecay
 
 Decay B+sig
-1.0 mu+ nu_mu       PHTOS SLN;
+1.0 mu+ nu_mu       PHOTOS SLN;
 Enddecay
 CDecay B-sig
 
