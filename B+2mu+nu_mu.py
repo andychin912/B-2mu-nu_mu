@@ -22,11 +22,12 @@ cutAndCopyList('mu-:highP','mu-:all','p>2.0',True)
 reconstructDecay('B+:L -> mu+:highP','')
 
 # event selection
-cutAndCopyList('mu-:impactp','mu-:highP','abs(d0)<0.5 and abs(z0)<2')
-reconstructDecay('B-:Im -> mu-:impactp','')
+cutAndCopyList('mu-:impactp','mu-:highP','abs(d0)<0.5 and abs(z0)<2 ')
+cutAndCopyList('mu-:pid','mu-:impactp','eid>0.5 or muid>0.9 ')
+reconstructDecay('B-:good -> mu-:pid','')
 
 # MC truth matching
-matchMCTruth('B+:Im')
+matchMCTruth('B+:good')
 
 # NTuple maker
 toolsmu = ['EventMetaData','^B- -> ^mu-']
@@ -36,9 +37,12 @@ toolsmu += ['MCKinematics','^B- -> ^mu-']
 toolsmu += ['DeltaEMbc','^B- -> mu-']
 toolsmu += ['CustomFloats[d0]','B- -> ^mu-']
 toolsmu += ['CustomFloats[z0]','B- -> ^mu-']
+toolsmu += ['CustomFloats[muid]','B- -> ^mu-']
+toolsmu += ['CustomFloats[eid]','B- -> ^mu-']
 
-ntupleFile('~/B+2mu+nu_mu/20171011_B+2mu+nu_mu_2_impact.root')
-ntupleTree('muon','B-:Im',toolsmu)
+
+ntupleFile('~/B+2mu+nu_mu/20171011_B+2mu+nu_mu_4_pid.root')
+ntupleTree('muon','B-:good',toolsmu)
 
 #processing
 process(analysis_main)
