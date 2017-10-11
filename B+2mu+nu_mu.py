@@ -21,11 +21,12 @@ loadStdDstarPlus()
 cutAndCopyList('mu-:highP','mu-:all','p>2.0',True)
 reconstructDecay('B+:L -> mu+:highP','')
 
-# reconstrucion
-
+# event selection
+cutAndCopyList('mu-:impactp','mu-:highP','abs(d0)<0.5 and abs(z0)<2')
+reconstructDecay('B-:Im -> mu-:impactp','')
 
 # MC truth matching
-matchMCTruth('B+:L')
+matchMCTruth('B+:Im')
 
 # NTuple maker
 toolsmu = ['EventMetaData','^B- -> ^mu-']
@@ -33,8 +34,11 @@ toolsmu += ['MCTruth','^B- -> ^mu-']
 toolsmu += ['Kinematics','^B- -> ^mu-']
 toolsmu += ['MCKinematics','^B- -> ^mu-']
 toolsmu += ['DeltaEMbc','^B- -> mu-']
-ntupleFile('~/B+2mu+nu_mu/20171004_B+2mu+nu_mu2_2_skim.root')
-ntupleTree('muon','B-:L',toolsmu)
+toolsmu += ['CustomFloats[d0]','B- -> ^mu-']
+toolsmu += ['CustomFloats[z0]','B- -> ^mu-']
+
+ntupleFile('~/B+2mu+nu_mu/20171011_B+2mu+nu_mu_2_impact.root')
+ntupleTree('muon','B-:Im',toolsmu)
 
 #processing
 process(analysis_main)
