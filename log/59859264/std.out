@@ -1,0 +1,33 @@
+2017-11-01 10:56:12 UTC dirac-jobexec   INFO: JobID: 59859264
+2017-11-01 10:56:12 UTC dirac-jobexec   INFO: DIRAC JobID 59859264 is running at site LCG.Napoli.it
+Executing StepInstance RunScriptStep1 of type ScriptStep1 ['ScriptStep1']
+2017-11-01 10:56:15 UTC dirac-jobexec/BelleScript   INFO: Command is: /home/prdbelle008/home_cream_776151389/CREAM776151389/DIRAC_3Hhpnzpilot/59859264/basf2helper.py B+2mu+nu_mu_Udst-MC9charged02.py release-00-09-01 MC9charged02
+2017-11-01 10:56:25 UTC gbasf2   INFO: initialization
+2017-11-01 10:56:25 UTC gbasf2   INFO: Parameter GBASF2_PARAMETER = 207
+2017-11-01 10:56:29 UTC gbasf2   INFO: basf2 running
+2017-11-01 10:56:30 UTC gbasf2   INFO: ApplicationStatus = Running
+2017-11-01 11:03:49 UTC gbasf2   INFO: metadata extration
+2017-11-01 11:03:55 UTC gbasf2   INFO: data uploading
+2017-11-01 11:03:57 UTC gbasf2   INFO: ApplicationStatus = Preparing to upload
+2017-11-01 11:04:00 UTC gbasf2   INFO: Destination SEs=Napoli-TMP-SE
+2017-11-01 11:04:11 UTC gbasf2   INFO: GUIDs not found from POOL XML Catalogue (and were generated) for: RootOutput_207.udst.root
+2017-11-01 11:04:11 UTC gbasf2   INFO: File Info: Size=41963079 Checksum=3d5fcb6c GUID=5EC89113-9511-B556-79EF-64B223CF798F
+2017-11-01 11:04:17 UTC gbasf2   INFO: Parameter DestinationSE = Napoli-TMP-SE
+2017-11-01 11:04:17 UTC gbasf2   INFO: Parameter InitialDestinationSE = Napoli-TMP-SE
+2017-11-01 11:04:17 UTC gbasf2   INFO: ApplicationStatus = Uploading
+2017-11-01 11:04:35 UTC gbasf2   INFO: SE Napoli-TMP-SE: ready to transfer: 15 < 30
+2017-11-01 11:04:35 UTC gbasf2/FailoverTransfer   INFO: Attempting dm.putAndRegister('/belle/user/ytchin/MC9charged02/RootOutput_207.udst.root','/home/prdbelle008/home_cream_776151389/CREAM776151389/DIRAC_3Hhpnzpilot/59859264/RootOutput_207.udst.root','Napoli-TMP-SE',guid='5EC89113-9511-B556-79EF-64B223CF798F',catalog='None', checksum = '3d5fcb6c')
+2017-11-01 11:04:48 UTC gbasf2/SRM2Storage   INFO: __putFile: Executing transfer of file:/home/prdbelle008/home_cream_776151389/CREAM776151389/DIRAC_3Hhpnzpilot/59859264/RootOutput_207.udst.root to srm://belle-dpm-01.na.infn.it:8446/srm/managerv2?SFN=/dpm/na.infn.it/home/belle/TMP/belle/user/ytchin/MC9charged02/RootOutput_207.udst.root using 4 streams
+2017-11-01 11:05:20 UTC gbasf2/SRM2Storage   INFO: __putFile: Successfully put file to storage.
+2017-11-01 11:05:30 UTC gbasf2/FailoverTransfer   INFO: dm.putAndRegister successfully uploaded and registered RootOutput_207.udst.root to Napoli-TMP-SE
+2017-11-01 11:08:48 UTC gbasf2   INFO: Checksum confirmed: 3d5fcb6c
+2017-11-01 11:12:18 UTC gbasf2/SRM2Storage  ERROR: SRM2Storage.__gfal_exec(gfal_ls): Execution failed. [SE][Ls][] httpg://belle-dpm-01.na.infn.it:8446/srm/managerv2: CGSI-gSOAP running on sm-wn01.scope.unina.it reports could not open connection to belle-dpm-01.na.infn.it:8446
+2017-11-01 11:12:18 UTC gbasf2/SRM2Storage  ERROR: 
+2017-11-01 11:12:18 UTC gbasf2/SRM2Storage  ERROR: 
+2017-11-01 11:12:18 UTC gbasf2   INFO: Failed to get replica size from Napoli-TMP-SE
+2017-11-01 11:12:18 UTC gbasf2   INFO: ApplicationStatus = Error: uploading failed
+2017-11-01 11:12:21 UTC gbasf2   INFO: No request found
+2017-11-01 11:12:24 UTC dirac-jobexec/BelleScript  ERROR: Non-zero status while executing 254: /home/prdbelle008/home_cream_776151389/CREAM776151389/DIRAC_3Hhpnzpilot/59859264/basf2helper.py B+2mu+nu_mu_Udst-MC9charged02.py release-00-09-01 MC9charged02
+2017-11-01 11:12:24 UTC dirac-jobexec/BelleScript   INFO: Output written to Script1_basf2helper.py.log, execution complete.
+2017-11-01 11:12:24 UTC dirac-jobexec/BelleScript  ERROR: 'basf2helper.py' Exited With Status 254
+2017-11-01 11:12:27 UTC dirac-jobexec/BelleScript   INFO: ===== Terminating <class 'BelleDIRAC.Workflow.Modules.BelleScript.BelleScript'> ===== 
