@@ -1,6 +1,6 @@
 from basf2 import *
-basf2.fw.add_module_search_path(".")
-basf2.register_module("EnableMyVariables")
+fw.add_module_search_path("./CustomizedVariables")
+register_module("EnableMyVariables")
 from modularAnalysis import *
 from stdCharged import *
 from stdPi0s import *
@@ -35,7 +35,8 @@ toolsmu += ['CustomFloats[piid]','B- -> ^mu-']
 
 toolsKs = ['MCTruth','^K_S0']
 toolsKs += ['Kinematics','^K_S0']
-toolsKs += ['CustomFloats[PDaughterMomentum:NDaughterMomentum]','^K_S0']
+toolsKs += ['CustomFloats[svdPDNHits:svdNDNHits]','^K_S0']
+toolsKs += ['CustomFloats[daughter(0,nSVDHits):daughter(1,nSVDHits)]','^K_S0']
 toolsKs += ['CustomFloats[cosAngleBetweenMomentumAndVertexVector]','^K_S0']
 toolsKs += ['CustomFloats[dr]','^K_S0']
 toolsKs += ['CustomFloats[KsDaughterprid]','^K_S0']
