@@ -2,21 +2,22 @@
 using namespace std;
 void KsIdentification()
 {
-   TFile *f1 = new TFile("~/B+2mu+nu_mu/temp/20171117_B+2mu+nu_mu_1.root");
+   TFile *f1 = new TFile("~/B+2mu+nu_mu/temp/20171124_B+2mu+nu_mu_ccbar000_9.root");
    TTree *Ks;
 
    f1->GetObject("Ks",Ks);
 
-   TH1F *h1=new TH1F("h1","",1000,0,0.1);
-   TH1F *h2=new TH1F("h2","",1000,0,0.1);
+   TH1F *h1=new TH1F("h1","",100,0,1);
+   TH1F *h2=new TH1F("h2","",100,0,1);
 
    //save to Ntuple
-   Ks->Draw("pow(K_S0_VertexZDist,0.25)>>h1","K_S0_mcErrors==0");
-   Ks->Draw("pow(K_S0_VertexZDist,0.25)>>h2","K_S0_mcErrors!=0");
+   Ks->Draw("sqrt(pow((K_S0_P4[3]),2)-pow(K_S0_P,2))>>h1","K_S0_mcErrors==0");
+   Ks->Draw("sqrt(pow((K_S0_P4[3]),2)-pow(K_S0_P,2))>>h2","K_S0_mcErrors!=0");
 
 
    //plot mcErrors and mcTruth
    TCanvas *c1 = new TCanvas("c1","",1);
+
 
 
    c1->SetFillColor(0);
@@ -29,10 +30,18 @@ void KsIdentification()
    h2->SetLineColor(kBlack);
    h2->SetLineWidth(2);
    h2->Draw();
+   TCanvas *c2 = new TCanvas("c2","",1);
+
+
+   c2->SetFillColor(0);
+   c2->SetFrameFillColor(0);
+   c2->SetFrameLineWidth(2);
+   c2->SetFillStyle(4000);
+   c2->SetFrameFillStyle(4000);
 
    h1->SetLineColor(kBlue);
    h1->SetLineWidth(2);
-   h1->Draw("same");
+   h1->Draw();
 
 
    h2->GetXaxis()->SetTitle("P [GeV]");
