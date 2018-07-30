@@ -30,20 +30,20 @@ particlelist = ['B+:all']
 skimOutputUdst('RootOutput',particlelist)
 
 # NTuple maker
-#toolsmu = ['EventMetaData','^B- -> ^mu-']
-#toolsmu += ['MCTruth','^B- -> ^mu-']
-#toolsmu += ['Kinematics','^B- -> ^mu-']
-#toolsmu += ['MCKinematics','^B- -> ^mu-']
-#toolsmu += ['DeltaEMbc','^B- -> mu-']
-#toolsmu += ['CustomFloats[useCMSFrame(E):useCMSFrame(px):useCMSFrame(py):useCMSFrame(pz):useCMSFrame(p)]','^B- -> ^mu-']
-#toolsmu += ['CustomFloats[d0]','B- -> ^mu-']
-#toolsmu += ['CustomFloats[z0]','B- -> ^mu-']
-#toolsmu += ['CustomFloats[muid]','B- -> ^mu-']
-#toolsmu += ['CustomFloats[eid]','B- -> ^mu-']
+toolsmu = ['EventMetaData','^B- -> ^mu-']
+toolsmu += ['MCTruth','^B- -> ^mu-']
+toolsmu += ['Kinematics','^B- -> ^mu-']
+toolsmu += ['MCKinematics','^B- -> ^mu-']
+toolsmu += ['DeltaEMbc','^B- -> mu-']
+toolsmu += ['CustomFloats[useCMSFrame(E):useCMSFrame(px):useCMSFrame(py):useCMSFrame(pz):useCMSFrame(p)]','^B- -> ^mu-']
+toolsmu += ['CustomFloats[d0]','B- -> ^mu-']
+toolsmu += ['CustomFloats[z0]','B- -> ^mu-']
+toolsmu += ['CustomFloats[muid]','B- -> ^mu-']
+toolsmu += ['CustomFloats[eid]','B- -> ^mu-']
 
 
-#ntupleFile('~/B+2mu+nu_mu/20171018_B+2mu+nu_mu_3_CMSframe.root')
-#ntupleTree('muon','B-:good',toolsmu)
+ntupleFile('~/B+2mu+nu_mu/temp/20181018_eeccbar_noskim.root')
+ntupleTree('muon','B-:all',toolsmu)
 
 #processing
 process(analysis_main)

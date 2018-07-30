@@ -6,7 +6,7 @@ from stdV0s import *
 from stdCharm import *
 
 # input mdst file
-inputMdst('default','/ghi/fs01/belle/bdata2/users/ytchin/MC9signal_mdst/B+2mu+nu_mu_mdst.root')
+inputMdst('default','~/B+2mu+nu_mu/mdst/B+2mu+nu_mu_mdst.root')
 
 # load particles
 loadStdCharged()
@@ -23,7 +23,7 @@ reconstructDecay('B+:L -> mu+:highP','')
 
 # event selection
 cutAndCopyList('mu-:impactp','mu-:highP','abs(d0)<0.5 and abs(z0)<2 ')
-cutAndCopyList('mu-:pid','mu-:impactp','eid>0.5 or muid>0.9 ')
+cutAndCopyList('mu-:pid','mu-:impactp','electronID>0.5 or muonID>0.9 ')
 reconstructDecay('B-:good -> mu-:pid','')
 
 # MC truth matching
@@ -35,18 +35,19 @@ skimOutputUdst('RootOutput',particlelist)
 
 # NTuple maker
 toolsmu = ['EventMetaData','^B- -> ^mu-']
-toolsmu += ['MCTruth','^B- -> ^mu-']
-toolsmu += ['Kinematics','^B- -> ^mu-']
-toolsmu += ['MCKinematics','^B- -> ^mu-']
-toolsmu += ['DeltaEMbc','^B- -> mu-']
-toolsmu += ['CustomFloats[useCMSFrame(E):useCMSFrame(px):useCMSFrame(py):useCMSFrame(pz):useCMSFrame(p)]','^B- -> ^mu-']
-toolsmu += ['CustomFloats[d0]','B- -> ^mu-']
-toolsmu += ['CustomFloats[z0]','B- -> ^mu-']
-toolsmu += ['CustomFloats[muid]','B- -> ^mu-']
-toolsmu += ['CustomFloats[eid]','B- -> ^mu-']
+toolsmu += ['MCGenCMSKinematics[5]','^B- -> ^mu-']
+#toolsmu += ['MCTruth','^B- -> ^mu-']
+#toolsmu += ['Kinematics','^B- -> ^mu-']
+#toolsmu += ['MCKinematics','^B- -> ^mu-']
+#toolsmu += ['DeltaEMbc','^B- -> mu-']
+#toolsmu += ['CustomFloats[useCMSFrame(E):useCMSFrame(px):useCMSFrame(py):useCMSFrame(pz):useCMSFrame(p)]','^B- -> ^mu-']
+#toolsmu += ['CustomFloats[d0]','B- -> ^mu-']
+#toolsmu += ['CustomFloats[z0]','B- -> ^mu-']
+#toolsmu += ['CustomFloats[muid]','B- -> ^mu-']
+#toolsmu += ['CustomFloats[eid]','B- -> ^mu-']
 
 
-ntupleFile('~/B+2mu+nu_mu/temp/20180713_eeccbar_test.root')
+ntupleFile('~/B+2mu+nu_mu/20180126_beamenergy.root')
 ntupleTree('muon','B-:good',toolsmu)
 
 #processing

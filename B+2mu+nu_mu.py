@@ -1,6 +1,5 @@
 from basf2 import *
-fw.add_module_search_path("./myModules")
-register_module("EnableMyVariables")
+register_module("EnableMyVariables", shared_lib_path='/home/belle/ytchin/git/B-2mu-nu_mu/libmyModules2.so')
 from modularAnalysis import *
 from stdCharged import *
 from stdPi0s import *
@@ -15,12 +14,12 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-train', '--train_data', dest='train_data', type=str, required=False, choices=['Ks','Gm'], action='append', nargs='+',
                     help='Create training data')
-parser.add_argument('-out', '--outputfile', dest='outputfile', type=str, default='~/B+2mu+nu_mu/20180123_B+2mu+nu_mu_1.root',
+parser.add_argument('-out', '--outputfile', dest='outputfile', type=str, default='/home/belle/ytchin/B+2mu+nu_mu/temp/20180718_B+2mu+nu_mu_1.root',
                     help='Name of the outputted file')
 args = parser.parse_args()
 
 #-------------------------------------------Input mdst file---------------------------------------------
-inputMdstList('default',['~/B+2mu+nu_mu/Udst/20171025_4_B+2mu+nu_mu_Udst.root.udst.root'])
+inputMdstList('default',['/ghi/fs01/belle/bdata2/users/ytchin/MC9signal/20171025_4_B+2mu+nu_mu_Udst.root.udst.root'])
 
 #--------------------------------------Particle identification------------------------------------------
 #Kshorts identification
@@ -55,7 +54,7 @@ toolsKstrain += ['CustomFloats[dphi]','^K_S0']
 """Cut using FOM of training results"""
 if args.train_data is None:
    analysis_main.add_module('MVAExpert',listNames=['K_S0:V0mass'],extraInfoName='KsFastBDT',identifier='KsIdentifier')   
-   cutAndCopyList('K_S0:V0good','K_S0:V0mass','extraInfo(KsFastBDT)>0.39')
+   cutAndCopyList('K_S0:V0good','K_S0:V0mass','extraInfo(KsFastBDT)>0.38')
 else:
    cutAndCopyList('K_S0:V0good','K_S0:V0mass','')
 
@@ -70,7 +69,6 @@ matchMCTruth('gamma:V0mass')
 #analysis_main.add_module('ParticleMCDecayString',listName='gamma:V0mass')
 toolsgmtrain = ['EventMetaData','^gamma']
 toolsgmtrain += ['MCTruth','^gamma']
-#toolsgmtrain += ['MCDecayString','^gamma']
 toolsgmtrain += ['CMSKinematics','^gamma']
 toolsgmtrain += ['Kinematics','^gamma']
 toolsgmtrain += ['CustomFloats[pxErr:pyErr:pzErr:ptErr]','^gamma']
@@ -94,7 +92,7 @@ toolsgmtrain += ['CustomFloats[dphi]','^gamma']
 """Cut using FOM of training results"""
 if args.train_data is None:
    analysis_main.add_module('MVAExpert',listNames=['gamma:V0mass'],extraInfoName='GmFastBDT',identifier='GmIdentifier')
-   cutAndCopyList('gamma:V0good','gamma:V0mass','extraInfo(GmFastBDT)>0.44')
+   cutAndCopyList('gamma:V0good','gamma:V0mass','extraInfo(GmFastBDT)>0.41')
 else:
    cutAndCopyList('gamma:V0good','gamma:V0mass','')
 
@@ -110,26 +108,58 @@ toolsgmECL += ['CustomFloats[E:cosTheta:isSignal]','^gamma']
 #Charged particle identification
 """Load charged particle"""
 stdMu('95eff')
+cutAndCopyList('mu+:good','mu+:95eff','electronID<0.03 and kaonID<0.2 and abs(d0)<0.08 and abs(z0)<0.3')
 stdE('99eff')
-stdPr()
+cutAndCopyList('e+:good','e+:99eff','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and kaonID<0.65 and abs(d0)<0.08 and abs(z0)<0.3')
 stdK()
-stdPi()
+cutAndCopyList('K+:good','K+:95eff','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and protonID<0.14 and abs(d0)<0.08 and abs(z0)<0.3')
+stdPr()
+cutAndCopyList('p+:good','p+:95eff','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and [protonID>0.14 or kaonID<0.048] and protonID>0.97 and abs(d0)<0.08 and abs(z0)<0.3')
+
+fillParticleList('pi+:good','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and [protonID>0.14 or kaonID<0.048] and protonID<0.97 and abs(d0)<0.08 and abs(z0)<0.3 and chiProb>0.001')
 
 #----------------------------------------multiple candidate selection of B-:good---------------------------
 rankByHighest('B-:good','useCMSFrame(p)',1,'signalSelection')
 
 #------------------------------------------Mbc and deltaE cut----------------------------------------------
 #reconstruct B:tag
-#inclusiveBtagReconstruction('Upsilon(4S):lnuskim','B-:good','B-:tag',['K_S0:V0good','gamma:V0good','gamma:tight','mu+:95eff','e+:99eff','pi+:95eff','K+:95eff','p+:95eff'])
-btag = register_module('MyInclusiveBtagReconstruction')
+#inclusiveBtagReconstruction('Upsilon(4S):lnuskim','B-:good','B-:tag',['K_S0:V0good','gamma:V0good','gamma:tight','mu+:good','e+:good','pi+:good','K+:good','p+:good'])
+btag = register_module('MyInclusiveBtagReconstruction', shared_lib_path='/home/belle/ytchin/git/B-2mu-nu_mu/libmyModules2.so')
 btag.set_name('MyInclusiveBtagReconstruction_' + 'B-:good')
 btag.param('upsilonListName', 'Upsilon(4S):lnuskim')
 btag.param('bsigListName', 'B-:good')
 btag.param('btagListName', 'B-:tag')
-btag.param('inputListsNames', ['K_S0:V0good','gamma:V0good','gamma:tight','mu+:95eff','e+:99eff','pi+:95eff','K+:95eff','p+:95eff'])
+btag.param('inputListsNames', ['K_S0:V0good','gamma:V0good','gamma:tight','pi+:good','p+:good','K+:good','mu+:good','e+:good'])
+btag.logging.log_level = LogLevel.DEBUG
 analysis_main.add_module(btag)
 
-matchMCTruth('B-:tag')
+#Btag multiple candidate selection
+#vertexKFit('B-:tag',-1)
+#rankByLowest('B-:tag','chiProb',1)
+
+#Another way to do Btag multiple candidate selection
+rankByHighest('B-:tag','NV0gamma')
+rankByHighest('B-:tag','NV0Lambda0')
+rankByHighest('B-:tag','NV0K_S0',1)
+
+#----------------------------------------just for checking-------------------------------------------------
+#matchMCTruth('B-:tag')
+"""check charged particle PID performance"""
+toolsmutag = ['EventMetaData','^mu-']
+toolsmutag += ['MCTruth','^mu-']
+toolsmutag += ['CustomFloats[isSignal:d0:z0:muonID:electronID:kaonID:pionID:protonID:nCDCHits]','^mu-']
+toolsetag = ['EventMetaData','^e-']
+toolsetag += ['MCTruth','^e-']
+toolsetag += ['CustomFloats[isSignal:d0:z0:muonID:electronID:kaonID:pionID:protonID:nCDCHits]','^e-']
+toolspitag = ['EventMetaData','^pi-']
+toolspitag += ['MCTruth','^pi-']
+toolspitag += ['CustomFloats[isSignal:d0:z0:muonID:electronID:kaonID:pionID:protonID:nCDCHits]','^pi-']
+toolsKtag = ['EventMetaData','^K-']
+toolsKtag += ['MCTruth','^K-']
+toolsKtag += ['CustomFloats[isSignal:d0:z0:muonID:electronID:kaonID:pionID:protonID:nCDCHits]','^K-']
+toolsptag = ['EventMetaData','^p+']
+toolsptag += ['MCTruth','^p+']
+toolsptag += ['CustomFloats[isSignal:d0:z0:muonID:electronID:kaonID:pionID:protonID:nCDCHits]','^p+']
 
 #-------------------------------------------------NTuple maker---------------------------------------------
 """signal side"""
@@ -147,11 +177,10 @@ toolsmu += ['CustomFloats[kaonID]','B- -> ^mu-']
 toolsmu += ['CustomFloats[pionID]','B- -> ^mu-']
 
 """tag side"""
-#analysis_main.add_module('ParticleMCDecayString',listName='B-:tag')
 toolsBtag = ['EventMetaData','^B-']
 toolsBtag += ['DeltaEMbc','^B-']
-#toolsBtag += ['MCDecayString','^B-']
 toolsBtag += ['MCTruth','^B-']
+
 
 """ntuple maker"""
 ntupleFile(args.outputfile)
@@ -163,6 +192,12 @@ elif args.train_data is None:
    #ntupleTree('Gm','gamma:tight',toolsgmECL)
    ntupleTree('muon','B-:good',toolsmu)
    ntupleTree('Btag','B-:tag',toolsBtag)
+   #ntupleTree('mutag','mu-:good',toolsmutag)
+   #ntupleTree('etag','e-:good',toolsetag)
+   #ntupleTree('pitag','pi-:good',toolspitag)
+   #ntupleTree('Ktag','K-:good',toolsKtag)
+   #ntupleTree('ptag','p+:good',toolsptag)
+
 
 #processing
 process(analysis_main)
