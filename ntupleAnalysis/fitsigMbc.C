@@ -1,0 +1,37 @@
+using namespace RooFit;
+using namespace RooStats;
+void fitsigMbc(){
+   RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
+   TFile* f1 = new TFile("MC9.root");
+   TTree* tr = (TTree*)f1->Get("y4s");
+   RooRealVar Mbc("Mbc","Mbc",5.1,5.29);
+   RooRealVar m0("m0","m0",5.27363,5.2,5.29);
+   RooRealVar sigma("sigma","sigma",0.000662827,0.,0.015);
+   RooRealVar cut("cut","cut",0.00980902,-1.1,1.1);
+   RooRealVar power("power","power",72.3549,2,500);
+   RooRealVar mean("mean","mean",5.27363,5.1,5.29);
+   RooRealVar mean2("mean2","mean2",5.20384,5.1,5.29);
+   RooRealVar sigmaL("sigmaL","sigmaL",0.00384808,0,20);
+   RooRealVar sigmaR("sigmaR","sigmaR",0.00384808,0,20);
+   RooRealVar sigma3("sigma3","sigma3",0.00980522,0,20);
+   RooRealVar stop("stop","stop",5.28,5.29,5.29);
+   RooRealVar stop2("stop2","stop2",5.28,5.29,5.29);
+   RooRealVar c("c","c",-105.646,-200.,0.);
+   RooRealVar c2("c2","c2",-33.5165,-200.,0.);
+   RooRealVar Flag("Flag","Flag",0,0,13);
+   RooRealVar TrainOut("TrainOut","TrainOut",0.5,0.,1.);
+   //RooCBShape sig1("sig1","sig1",Mbc,m0,sigma,cut,power);
+   //RooBifurGauss sig3("sig3","sig3",Mbc,mean,sigmaL,sigmaR);
+   RooBreitWigner sig3("sig3","sig3",Mbc,mean,sigma3);
+   RooArgusBG sig1("sig1","sig1",Mbc,stop,c2);
+   RooArgusBG sig2("sig2","sig2",Mbc,stop2,c);
+   RooRealVar m1("m1","m1",0.504986,0,1);
+   RooRealVar m2("m2","m2",0.477504,0,1);
+   RooAddPdf sig("sig","sig",RooArgList(sig1,sig2,sig3),RooArgList(m1,m2));
+   RooDataSet data("data","data",RooArgSet(Mbc,Flag,TrainOut),Import(*tr),Cut("Flag==0&&TrainOut>0.5"));
+   RooFitResult *r = sig.fitTo(data,Minos(true),PrintEvalErrors(10));
+   RooPlot* frame = Mbc.frame(Title("sig"));
+   data.plotOn(frame);
+   sig.plotOn(frame);
+   frame->Draw();
+}

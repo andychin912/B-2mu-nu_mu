@@ -1,5 +1,5 @@
 from basf2 import *
-register_module("EnableMyVariables", shared_lib_path='/home/belle/ytchin/git/B-2mu-nu_mu/libmyModules2.so')
+register_module("EnableMyVariables", shared_lib_path='/home/belle/ytchin/git/B-2mu-nu_mu/libytchin.so')
 from modularAnalysis import *
 from stdCharged import *
 from stdPi0s import *
@@ -14,7 +14,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-train', '--train_data', dest='train_data', type=str, required=False, choices=['Ks','Gm'], action='append', nargs='+',
                     help='Create training data')
-parser.add_argument('-out', '--outputfile', dest='outputfile', type=str, default='/home/belle/ytchin/B+2mu+nu_mu/temp/20180718_B+2mu+nu_mu_1.root',
+parser.add_argument('-out', '--outputfile', dest='outputfile', type=str, default='/home/belle/ytchin/B+2mu+nu_mu/temp/20181016_signalGm.root',
                     help='Name of the outputted file')
 args = parser.parse_args()
 
@@ -43,6 +43,7 @@ toolsKstrain += ['CustomFloats[daughter(0,protonID):daughter(1,protonID)]','^K_S
 toolsKstrain += ['CustomFloats[daughter(0,cosTheta):daughter(1,cosTheta)]','^K_S0']
 toolsKstrain += ['CustomFloats[daughter(0,p):daughter(1,p)]','^K_S0']
 toolsKstrain += ['CustomFloats[daughter(0,px):daughter(0,py):daughter(0,pz):daughter(1,px):daughter(1,py):daughter(1,pz)]','^K_S0']
+toolsKstrain += ['CustomFloats[daughter(0,z0):daughter(1,z0)]','^K_S0']
 toolsKstrain += ['CustomFloats[cosAngleBetweenMomentumAndVertexVector]','^K_S0']
 toolsKstrain += ['CustomFloats[dr]','^K_S0']
 toolsKstrain += ['CustomFloats[decayAngle(0):decayAngle(1)]','^K_S0']
@@ -78,6 +79,7 @@ toolsgmtrain += ['CustomFloats[daughter(0,electronID):daughter(1,electronID)]','
 toolsgmtrain += ['CustomFloats[shorterdr]','^gamma']
 toolsgmtrain += ['CustomFloats[longerdr]','^gamma']
 toolsgmtrain += ['CustomFloats[daughter(0,nCDCHits):daughter(1,nCDCHits)]','^gamma']
+toolsgmtrain += ['CustomFloats[daughter(0,z0):daughter(1,z0)]','^gamma']
 toolsgmtrain += ['CustomFloats[daughter(0,nSVDHits):daughter(1,nSVDHits)]','^gamma']
 toolsgmtrain += ['CustomFloats[daughter(0,cosTheta):daughter(1,cosTheta)]','^gamma']
 toolsgmtrain += ['CustomFloats[daughter(0,p):daughter(1,p)]','^gamma']
@@ -107,28 +109,23 @@ toolsgmECL += ['CustomFloats[E:cosTheta:isSignal]','^gamma']
 
 #Charged particle identification
 """Load charged particle"""
-stdMu('95eff')
-cutAndCopyList('mu+:good','mu+:95eff','electronID<0.03 and kaonID<0.2 and abs(d0)<0.08 and abs(z0)<0.3')
-stdE('99eff')
-cutAndCopyList('e+:good','e+:99eff','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and kaonID<0.65 and abs(d0)<0.08 and abs(z0)<0.3')
-stdK()
-cutAndCopyList('K+:good','K+:95eff','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and protonID<0.14 and abs(d0)<0.08 and abs(z0)<0.3')
-stdPr()
-cutAndCopyList('p+:good','p+:95eff','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and [protonID>0.14 or kaonID<0.048] and protonID>0.97 and abs(d0)<0.08 and abs(z0)<0.3')
-
+fillParticleList('mu+:good','electronID<0.03 and kaonID<0.2 and muonID>0.625 and abs(d0)<0.08 and abs(z0)<0.3 and chiProb>0.001')
+fillParticleList('e+:good','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and kaonID<0.65 and electronID>0.75 and abs(d0)<0.08 and abs(z0)<0.3 and chiProb>0.001')
+fillParticleList('K+:good','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and protonID<0.14 and kaonID>0.048 and abs(d0)<0.08 and abs(z0)<0.3 and chiProb>0.001')
+fillParticleList('p+:good','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and [protonID>0.14 or kaonID<0.048] and protonID>0.97 and abs(d0)<0.08 and abs(z0)<0.3')
 fillParticleList('pi+:good','[electronID>0.03 or kaonID>0.2 or muonID<0.625] and [electronID<0.75 or kaonID>0.65] and [protonID>0.14 or kaonID<0.048] and protonID<0.97 and abs(d0)<0.08 and abs(z0)<0.3 and chiProb>0.001')
 
 #----------------------------------------multiple candidate selection of B-:good---------------------------
-rankByHighest('B-:good','useCMSFrame(p)',1,'signalSelection')
+applyCuts('B-:good','countInList(B-:good,'')<2')
 
 #------------------------------------------Mbc and deltaE cut----------------------------------------------
 #reconstruct B:tag
 #inclusiveBtagReconstruction('Upsilon(4S):lnuskim','B-:good','B-:tag',['K_S0:V0good','gamma:V0good','gamma:tight','mu+:good','e+:good','pi+:good','K+:good','p+:good'])
-btag = register_module('MyInclusiveBtagReconstruction', shared_lib_path='/home/belle/ytchin/git/B-2mu-nu_mu/libmyModules2.so')
+btag = register_module('MyInclusiveBtagReconstruction', shared_lib_path='/home/belle/ytchin/git/B-2mu-nu_mu/libytchin.so')
 btag.set_name('MyInclusiveBtagReconstruction_' + 'B-:good')
-btag.param('upsilonListName', 'Upsilon(4S):lnuskim')
+btag.param('upsilonListName', 'Upsilon(4S):before')
 btag.param('bsigListName', 'B-:good')
-btag.param('btagListName', 'B-:tag')
+btag.param('btagListName', 'B+:tag')
 btag.param('inputListsNames', ['K_S0:V0good','gamma:V0good','gamma:tight','pi+:good','p+:good','K+:good','mu+:good','e+:good'])
 btag.logging.log_level = LogLevel.DEBUG
 analysis_main.add_module(btag)
@@ -141,6 +138,23 @@ analysis_main.add_module(btag)
 rankByHighest('B-:tag','NV0gamma')
 rankByHighest('B-:tag','NV0Lambda0')
 rankByHighest('B-:tag','NV0K_S0',1)
+
+#Cut on Mbc and deltaE
+cutAndCopyList('B-:tagDeltaEMbc','B-:tag','Mbc>5.0 and deltaE>-3.6 and deltaE<0.1')
+#
+#------------------------------------continuum suppression-------------------------------------------------
+#analysis_main.add_module('MyContinuumSuppressionBuilder', signalList='B-:good', tagList='B-:tag', shared_lib_path='/home/belle/ytchin/git/B-2mu-nu_mu/libmyModules.so')
+buildRestOfEvent('B-:good', path=analysis_main)
+cleanMask = ('cleanMask', 'useCMSFrame(p)<=3.2 and nCDCHits>0', 'p>=0.05 and useCMSFrame(p)<=3.2')
+appendROEMasks('B-:good',[cleanMask],path=analysis_main)
+analysis_main.add_module('ContinuumSuppressionBuilder', particleList='B-:good', ROEMask='cleanMask')
+
+#event selection
+cutAndCopyList('B-:evtslt','B-:good','daughter(0,kaonID)<0.04 and daughter(0,electronID)<0.1 and thrustOm<0.99 and useCMSFrame(p)>2.2 and useCMSFrame(p)<3.1 and daughter(0,nCDCHits)>0 and nROETracks(cleanMask)>3 and ROE_eextra(cleanMask)<4.1 and nROEKLMClusters<6 and daughter(0,pidDeltaLogLikelihoodValueExpert(13,211,ALL))>27.8 and daughter(0,chiProb)>0.001 and abs(daughter(0,d0))<0.08 and abs(daughter(0,z0))<0.3')
+#
+
+#------------------------------------reconstruct Y(4S)-----------------------------------------------------
+reconstructDecay('Upsilon(4S):lnuskim -> B-:evtslt B+:tagDeltaEMbc','')
 
 #----------------------------------------just for checking-------------------------------------------------
 #matchMCTruth('B-:tag')
@@ -162,27 +176,37 @@ toolsptag += ['MCTruth','^p+']
 toolsptag += ['CustomFloats[isSignal:d0:z0:muonID:electronID:kaonID:pionID:protonID:nCDCHits]','^p+']
 
 #-------------------------------------------------NTuple maker---------------------------------------------
-"""signal side"""
-toolsmu = ['EventMetaData','^B- -> ^mu-']
-toolsmu += ['MCTruth','^B- -> ^mu-']
-toolsmu += ['Kinematics','^B- -> ^mu-']
-toolsmu += ['MCKinematics','^B- -> ^mu-']
-toolsmu += ['DeltaEMbc','^B- -> mu-']
-toolsmu += ['CustomFloats[useCMSFrame(E):useCMSFrame(px):useCMSFrame(py):useCMSFrame(pz):useCMSFrame(p)]','^B- -> ^mu-']
-toolsmu += ['CustomFloats[d0]','B- -> ^mu-']
-toolsmu += ['CustomFloats[z0]','B- -> ^mu-']
-toolsmu += ['CustomFloats[muonID]','B- -> ^mu-']
-toolsmu += ['CustomFloats[electronID]','B- -> ^mu-']
-toolsmu += ['CustomFloats[kaonID]','B- -> ^mu-']
-toolsmu += ['CustomFloats[pionID]','B- -> ^mu-']
+toolsmu = ['EventMetaData','Upsilon(4S) -> [^B- -> ^mu-] ^B+']
+toolsmu += ['MCTruth','Upsilon(4S) -> [^B- -> ^mu-] B+']
+toolsmu += ['Kinematics','Upsilon(4S) -> [^B- -> ^mu-] B+']
+toolsmu += ['MCKinematics','Upsilon(4S) -> [^B- -> ^mu-] B+']
+toolsmu += ['DeltaEMbc','Upsilon(4S) -> [B- -> mu-] ^B+']
+toolsmu += ['CustomFloats[useCMSFrame(E):useCMSFrame(px):useCMSFrame(py):useCMSFrame(pz):useCMSFrame(p)]','^Upsilon(4S) -> [^B- -> mu-] ^B+']
+toolsmu += ['CustomFloats[d0]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[z0]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[muonID]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[electronID]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[kaonID]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[pionID]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[protonID]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[nCDCHits]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[abs(useCMSFrame(cosTheta))]','^Upsilon(4S) -> [B- -> mu-] B+']
+toolsmu += ['CustomFloats[NLep]','Upsilon(4S) -> [B- -> mu-] ^B+']
+toolsmu += ['CustomFloats[nROETracks(cleanMask)]','Upsilon(4S) -> [^B- -> mu-] B+']
+toolsmu += ['ContinuumSuppression[KsfwFS1CcROE]','Upsilon(4S) -> [^B- -> mu-] B+']
+toolsmu += ['ContinuumSuppression','Upsilon(4S) -> [^B- -> mu-] B+']
+toolsmu += ['CustomFloats[chiProb]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[nROEKLMClusters]','Upsilon(4S) -> [^B- -> mu-] B+']
+toolsmu += ['CustomFloats[ROE_eextra(cleanMask)]','Upsilon(4S) -> [^B- -> mu-] B+']
+toolsmu += ['CustomFloats[ROE_neextra(cleanMask):useCMSFrame(ROE_Px(cleanMask)):useCMSFrame(ROE_Py(cleanMask)):useCMSFrame(ROE_Pz(cleanMask))]','Upsilon(4S) -> [^B- -> mu-] B+']
+toolsmu += ['CustomFloats[pidPairProbabilityExpert(13,211,ALL)]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[pidPairProbabilityExpert(13,211,KLM)]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[pidProbabilityExpert(13,ALL)]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[pidDeltaLogLikelihoodValueExpert(13,211,ALL)]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[pidLogLikelihoodValueExpert(13,ALL)]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[pidLogLikelihoodValueExpert(13,KLM)]','Upsilon(4S) -> [B- -> ^mu-] B+']
+toolsmu += ['CustomFloats[pidDeltaLogLikelihoodValueExpert(13,211,KLM)]','Upsilon(4S) -> [B- -> ^mu-] B+']
 
-"""tag side"""
-toolsBtag = ['EventMetaData','^B-']
-toolsBtag += ['DeltaEMbc','^B-']
-toolsBtag += ['MCTruth','^B-']
-
-
-"""ntuple maker"""
 ntupleFile(args.outputfile)
 if args.train_data == [['Gm']]:
    ntupleTree('Gm','gamma:V0mass',toolsgmtrain)
@@ -190,8 +214,7 @@ elif args.train_data == [['Ks']]:
    ntupleTree('Ks','K_S0:V0mass',toolsKstrain)
 elif args.train_data is None:
    #ntupleTree('Gm','gamma:tight',toolsgmECL)
-   ntupleTree('muon','B-:good',toolsmu)
-   ntupleTree('Btag','B-:tag',toolsBtag)
+   ntupleTree('y4s','Upsilon(4S):lnuskim',toolsmu)
    #ntupleTree('mutag','mu-:good',toolsmutag)
    #ntupleTree('etag','e-:good',toolsetag)
    #ntupleTree('pitag','pi-:good',toolspitag)

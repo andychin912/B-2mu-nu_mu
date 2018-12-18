@@ -1,1 +1,5 @@
 gbasf2 can only be used in this directory
+CleoCone(1) is almost 100% correlate to p*
+CleoCone(2~9) is identical to CleoCone(2~9,ROE)
+KSFW(hso00~04,hoo1,3) == 0 when no charged final state in ROE
+KSFW(hso1X) == 0 when no neutral final state in ROE
